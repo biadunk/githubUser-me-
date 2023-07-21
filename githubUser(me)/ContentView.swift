@@ -12,7 +12,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            AsyncImage(url: URL(string: user?.avatar_url ?? "")) { image in
+            AsyncImage(url: URL(string: user?.avatarUrl ?? "")) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -76,7 +76,7 @@ struct ContentView_Previews: PreviewProvider {
 
 struct GitHubUser: Codable {
     var login: String
-    var avatar_url: String
+    var avatarUrl: String
     var bio: String
 }
 
