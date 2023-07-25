@@ -9,17 +9,39 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var user: GitHubUser?
+    @State private var userName: String = ""
     
     var body: some View {
         VStack {
-            AsyncImage(url: URL(string: user?.avatarUrl ?? "")) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .clipShape(Circle())
-            } placeholder: {
-                Circle()
-                    .frame(width: 128, height: 128)
+            Form{
+                Text("Username")
+                    .font(.system(size: 30))
+                    .bold()
+
+                TextField(text: $userName){
+                }
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
+                
+                Button {
+                    fetch()
+                } label: {
+                    Text("Click")
+                }
+
+            }
+            .frame(height: 200)
+            
+            if let user, let imageUrl = URL(string: user.avatarUrl ?? "") {
+                AsyncImage(url: imageUrl) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(Circle())
+                } placeholder: {
+                    Circle()
+                        .frame(width: 128, height: 128)
+                }
             }
                 
             Text(user?.login ?? "default username")
@@ -31,8 +53,14 @@ struct ContentView: View {
         }
         .padding()
         .task {
+           fetch()
+        }
+    }
+    
+    func fetch() {
+        Task {
             do {
-                user = try await getUser()
+                user = try await getUser(with: userName)
             } catch GHError.invalidURL {
                 print("Invalid URL")
             } catch GHError.invalidResponse {
@@ -45,8 +73,8 @@ struct ContentView: View {
         }
     }
     
-    func getUser() async throws -> GitHubUser {
-        let endPoint = "https://api.github.com/users/biadunk"
+    func getUser(with userName: String) async throws -> GitHubUser {
+        let endPoint = "https://api.github.com/users/\(userName)"
         guard let url = URL(string: endPoint) else {
             throw GHError.invalidURL
         }
@@ -74,10 +102,10 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-struct GitHubUser: Codable {
-    var login: String
-    var avatarUrl: String
-    var bio: String
+struct GitHubUser : Codable {
+    let login: String?
+    let avatarUrl: String?
+    let bio: String?
 }
 
 enum GHError: Error {
