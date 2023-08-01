@@ -17,6 +17,7 @@ struct ContentView: View {
                 Text("Username")
                     .font(.system(size: 30))
                     .bold()
+                    .frame(maxWidth: .infinity)
 
                 TextField(text: $userName){
                 }
@@ -26,11 +27,14 @@ struct ContentView: View {
                 Button {
                     fetch()
                 } label: {
-                    Text("Click")
+                    Image(systemName: "magnifyingglass")
+                        .frame(maxWidth: .infinity)
                 }
 
             }
             .frame(height: 200)
+            .frame(width: 210)
+            .scrollContentBackground(.hidden)
             
             if let user, let imageUrl = URL(string: user.avatarUrl ?? "") {
                 AsyncImage(url: imageUrl) { image in
